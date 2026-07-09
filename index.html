@@ -274,7 +274,7 @@ function renderOda(){
    +'<button class="odSortBtn'+(odSort==='date'?' on':'')+'" data-s="date" onclick="odSetSort(\'date\')">'+(hu?'Dátum':'Data')+'</button>'
    +'</div>'
    +'<div style="overflow:auto"><table style="width:100%"><thead><tr>'
-   +'<th>'+(hu?'Pont':'Scor')+'</th><th>'+(hu?'Dátum':'Data')+'</th><th>'+(hu?'Érték':'Valoare')+'</th><th>'+(hu?'Régió':'Regiune')+'</th><th>'+(hu?'Projekt megye':'Județ proiect')+'</th><th>'+(hu?'Típus':'Tip')+'</th><th>'+(hu?'Nyertes (vezető kiemelve)':'Câștigător (lider)')+'</th><th>'+(hu?'Tender':'Licitație')+'</th><th>'+(hu?'Forrás':'Sursă')+'</th>'
+   +'<th>'+(hu?'Pont':'Scor')+'</th><th>'+(hu?'Dátum':'Data')+'</th><th>'+(hu?'Érték':'Valoare')+'</th><th><span title="'+(hu?'A Régió a nyertes kivitelező SZÉKHELYE szerint; a projekt megyéje a következő oszlopban áll.':'Regiunea = după SEDIUL constructorului câștigător; județul proiectului este în coloana următoare.')+'" style="cursor:help;border-bottom:1px dotted var(--muted)">'+(hu?'Régió':'Regiune')+' ⓘ</span></th><th>'+(hu?'Projekt megye':'Județ proiect')+'</th><th>'+(hu?'Típus':'Tip')+'</th><th>'+(hu?'Nyertes (vezető kiemelve)':'Câștigător (lider)')+'</th><th>'+(hu?'Tender':'Licitație')+'</th><th>'+(hu?'Forrás':'Sursă')+'</th>'
    +'</tr></thead><tbody id="odaBody"></tbody></table></div>';
   filterOda('');
 }
@@ -374,7 +374,7 @@ function renderKiv(){
    +'<button class="kivSortBtn'+(kivSort==='value'?' on':'')+'" data-s="value" onclick="kivSetSort(\'value\')">'+(hu?'Össz-érték':'Valoare')+'</button>'
    +'</div>'
    +'<div style="overflow:auto"><table style="width:100%"><thead><tr>'
-   +'<th>#</th><th>'+(hu?'Kivitelező':'Constructor')+'</th><th>'+(hu?'Régió':'Regiune')+'</th><th>'+(hu?'Nyerés / egyedül':'Câștiguri')+'</th><th>'+(hu?'Projekt':'Proiecte')+'</th><th>'+(hu?'AI átl / max':'Scor med/max')+'</th><th>'+(hu?'Össz-érték*':'Valoare*')+'</th><th>'+(hu?'Megyék':'Județe')+'</th><th>'+(hu?'Kapcsolat':'Contact')+'</th><th>'+(hu?'Projektek':'Proiecte')+'</th>'
+   +'<th>#</th><th>'+(hu?'Kivitelező':'Constructor')+'</th><th><span title="'+(hu?'A Régió a kivitelező SZÉKHELYE szerint; ismeretlen székhelynél a domináns projekt-megye alapján.':'Regiunea = după SEDIUL constructorului; dacă sediul e necunoscut, după județul dominant al proiectelor.')+'" style="cursor:help;border-bottom:1px dotted var(--muted)">'+(hu?'Régió':'Regiune')+' ⓘ</span></th><th>'+(hu?'Nyerés / egyedül':'Câștiguri')+'</th><th>'+(hu?'Projekt':'Proiecte')+'</th><th>'+(hu?'AI átl / max':'Scor med/max')+'</th><th>'+(hu?'Össz-érték*':'Valoare*')+'</th><th>'+(hu?'Megyék':'Județe')+'</th><th>'+(hu?'Kapcsolat':'Contact')+'</th><th>'+(hu?'Projektek':'Proiecte')+'</th>'
    +'</tr></thead><tbody id="kivBody"></tbody></table></div>'
    +'<p style="color:var(--muted);font-size:12px;margin-top:14px;max-width:900px">'+(hu?'* Az érték indikatív (a cég nyertes projektjeinek összege; konzorciumnál tagonként). A régió a kivitelező SZÉKHELYE szerint (● = ismert székhely; egyébként a domináns projektmegye). A nyerésszám a legjobb aktivitás-jel. Forrás: TED. A napi futás bővíti a listát.':'* Valoare indicativă. Regiune după sediu (● = sediu cunoscut). Sursă: TED.')+'</p>';
   filterKiv('');
@@ -549,5 +549,5 @@ function renderAdmin(){
 applyLang();
 </script>
 </body>
-<!-- redeploy 20260709-131947 -->
+<!-- redeploy 20260709-132326 -->
 </html>
