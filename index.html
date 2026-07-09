@@ -414,7 +414,7 @@ hu:{radar:"Radar",seap:"SEAP",ted:"TED",ma:"Ma",oda:"Odaítélések",kiv:"Kivite
  mainNote:"ÉLŐ PILOT — VALÓS adatok: SEAP/e-licitatie.ro (158 kiírás → top 19) és TED (163 → 11). Pontozás: szabálymotor + Claude AI-korrekció. Éles rendszerben óránként, magától frissül.",
  statH:"Statisztika — élő pilot-adat",statT:"releváns tender, össz.",statB:"Pontsáv-eloszlás (db)",statP:"Termékcsoport-találatok (db)",statC:"Megyék össz-projektérték szerint",statTy:"Típus szerint",
  adminH:"Admin — kulcsszó-csomagok és küszöbök (pilot: csak megtekintés)",save:"Mentés",
- fresh1:"Adatállapot:",fresh2:"— a fájl statikus pillanatfelvétel; automatikus frissítéshez ütemezett futtatás vagy szerveres verzió kell.",freshOld:"⚠️ Az adatok több mint 24 órásak!"},
+ fresh1:"Adatállapot:",fresh2:"· napi automatikus frissítés hétköznaponként 07:07-kor (TED + SEAP élő lekérés).",freshOld:"⚠️ Az adatok több mint 24 órásak!"},
 ro:{radar:"Radar",seap:"SEAP",ted:"TED",ma:"Azi",oda:"Atribuiri",kiv:"Constructori",guide:"Ghid",stat:"Statistici",admin:"Admin",
  kl1:"HOT (90+) deschise acum",kl2:"oportunități cu 70+ puncte",kl3:"potențial total (70+ deschise)",kl4:"urmărite, expiră în 7 zile",kl5:"anunțuri analizate: 351 SEAP (9 iul.) + 434 TED (9 iul.)",
  th1:"Scor ▾",th2:"Licitație / Rezumat AI",th3:"Locație",th4:"Termen",th5:"Valoare estimată",th6:"Stare",th7:"Responsabil",th8:"Sursă",
@@ -428,7 +428,7 @@ ro:{radar:"Radar",seap:"SEAP",ted:"TED",ma:"Azi",oda:"Atribuiri",kiv:"Constructo
  mainNote:"PILOT LIVE — date REALE: SEAP/e-licitatie.ro (158 anunțuri → top 19) și TED (163 → 11). Punctaj: motor de reguli + corecție Claude AI. În sistemul live se actualizează automat, din oră în oră.",
  statH:"Statistici — date pilot live",statT:"licitații relevante, total",statB:"Distribuția scorurilor (buc.)",statP:"Grupe de produse (buc.)",statC:"Județe după valoarea totală",statTy:"După tip",
  adminH:"Admin — pachete de cuvinte-cheie și praguri (pilot: doar vizualizare)",save:"Salvează",
- fresh1:"Stare date:",fresh2:"— fișierul e un instantaneu static; pentru actualizare automată e nevoie de rulare programată sau versiune pe server.",freshOld:"⚠️ Datele au peste 24 de ore!"}};
+ fresh1:"Stare date:",fresh2:"· actualizare automată zilnică în zilele lucrătoare la 07:07 (interogare live TED + SEAP).",freshOld:"⚠️ Datele au peste 24 de ore!"}};
 const tr = k => TR[L][k];
 const st = s => TR[L].st[s]||s;
 const sums = t => (L==='ro'&&t.sum_ro)?t.sum_ro:t.sum;
@@ -450,7 +450,7 @@ function applyLang(){
   hu.style.background=L==='hu'?'var(--accent)':'none'; hu.style.color=L==='hu'?'#fff':'var(--muted)';
   ro.style.background=L==='ro'?'var(--accent)':'none'; ro.style.color=L==='ro'?'#fff':'var(--muted)';
   const age=(Date.now()-new Date(GEN_TS))/36e5;
-  document.getElementById('fresh').innerHTML=(age>24?'<b style="color:var(--mid)">'+tr('freshOld')+'</b> ':'')+tr('fresh1')+' <b>2026-07-07 13:20</b> (TED friss · SEAP offline) '+tr('fresh2');
+  document.getElementById('fresh').innerHTML=(age>24?'<b style="color:var(--mid)">'+tr('freshOld')+'</b> ':'')+tr('fresh1')+' <b>'+GEN_TS.slice(0,16).replace('T',' ')+'</b> '+tr('fresh2');
   setView(VIEW);
 }
 
@@ -542,5 +542,5 @@ function renderAdmin(){
 applyLang();
 </script>
 </body>
-<!-- redeploy 20260709-122021 -->
+<!-- redeploy 20260709-123922 -->
 </html>
