@@ -250,12 +250,13 @@ function odScore(o){const t=nmw(o.t);let s=2;
 function renderOda(){
   var hu=L==='hu';
   var nv=OD.filter(function(o){return o.w;}).length;
+  var _odW=new Set(); OD.forEach(function(o){ if(o.w) o.w.split(',').forEach(function(x){var nn=x.trim(); if(nn)_odW.add(nn);}); });
   odaPanel.innerHTML =
    '<h2 style="margin:4px 0 2px">'+(hu?'Odaítélt szerződések — nyertes kivitelezők (12 hónap)':'Contracte atribuite — câștigători (12 luni)')+'</h2>'
    +'<p style="color:var(--muted);margin:2px 0 12px;max-width:900px">'+(hu?'A CM-releváns TED-odaítélések (tető/homlokzat/energetika/iskola/kórház/sport), országos lefedettséggel, 4 értékesítési régióba sorolva. A nyertes kivitelező a CM valódi vevője — konzorciumnál a VEZETŐ cég a fő kontakt. A Forrás linken a teljes hirdetmény.':'Atribuiri TED relevante CM, acoperire națională, 4 regiuni de vânzări. La consorții, firma LIDER e contactul principal.')+'</p>'
    +'<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px">'
    + kivKpi(OD.length,hu?'megjelenített odaítélés':'atribuiri afișate')
-   + kivKpi(161,hu?'releváns (12 hó)':'relevante (12 luni)')
+   + kivKpi(_odW.size,hu?'nyertes cég (12 hó)':'firme câștigătoare (12 luni)')
    + kivKpi(nv,hu?'azonosított nyertessel':'cu câștigător')
    +'</div>'
    +'<div style="margin:2px 0 12px;display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span style="color:var(--muted);font-size:12px">'+(hu?'Régió (kattints a szűréshez):':'Regiune (click):')+'</span> '+regChipsOda()+'</div>'
@@ -353,7 +354,7 @@ function renderKiv(){
    '<h2 style="margin:4px 0 2px">'+(hu?'Nyertes kivitelezők — prioritási lista':'Constructori câștigători — listă de prioritate')+'</h2>'
    +'<p style="color:var(--muted);margin:2px 0 12px;max-width:900px">'+(hu?'Kit hívjunk? A CM valódi vevői a nyertes kivitelezők (tető/homlokzat/energetika/iskola/kórház/sport). Országos lefedettség, 4 értékesítési régió a kivitelező SZÉKHELYE szerint. Rendezhető aktivitás, AI-pont vagy össz-érték szerint.':'Cine să sună? Constructorii câștigători, acoperire națională, 4 regiuni după SEDIU.')+'</p>'
    +'<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px">'
-   + kivKpi(170,hu?'releváns odaítélés':'atribuiri relevante')
+   + kivKpi(OD.length,hu?'odaítélés az adatbázisban':'atribuiri în bază')
    + kivKpi(K.length,hu?'listázott cég':'firme listate')
    + kivKpi(withMail,hu?'közvetlen email':'email direct')
    + kivKpi(hqN,hu?'ismert székhely':'sediu cunoscut')
@@ -408,10 +409,10 @@ hu:{radar:"Radar",seap:"SEAP",ted:"TED",ma:"Ma",oda:"Odaítélések",kiv:"Kivite
  clear:"Szűrők törlése",exp:"⬇ Export Excelbe",new_:"új",user:"pilot-nézet",nap:"nap",lejart:"LEJÁRT",orig:"eredeti ↗",origFull:"eredeti kiírás ↗",
  st:{"ÚJ":"ÚJ","MEGNÉZVE":"MEGNÉZVE","ÉRDEKES":"ÉRDEKES","SALES MEGKERESTE":"SALES MEGKERESTE","AJÁNLAT KÉSZÜL":"AJÁNLAT KÉSZÜL","NEM ÉRDEKES":"NEM ÉRDEKES"},
  dAlap:"Alapadatok",dKiiro:"Kiíró",dHely:"Helyszín",dErtek:"Becsült érték",dHat:"Határidő",dForras:"Forrás",dFin:"Finanszírozás",dNyertes:"Nyertes",dPont:"Pontozás",dSzab:"Szabálymotor",dAI:"AI-korrekció",dVeg:"Végső",dKw:"Észlelt kulcsszavak",dElem:"AI-elemzés",dAkc:"Javasolt akció",dMegj:"Megjegyzés",dKapcs:"Kapcsolat (kiíró)",dKapcsNa:"— élesben automatikusan töltődik a 60+ pontos találatokhoz (napi futás)",dPh:"Írj megjegyzést… (éles rendszerben mentődik + audit trail)",
- vnSeap:"SEAP/SICAP (e-licitatie.ro) — 130 friss építési kiírásból (júl. 1 – júl. 8.) a legrelevánsabb 10, élő API-lekérésből.",
- vnTed:"TED (ted.europa.eu) — EU-értékhatár feletti román tenderek: 166 hirdetményből a releváns 18 (júl. 1 – júl. 8.).",
+ vnSeap:"SEAP/SICAP (e-licitatie.ro) — {S} releváns találat a napi élő API-lekérésből.",
+ vnTed:"TED (ted.europa.eu) — EU-értékhatár feletti román tenderek: {T} releváns találat.",
  vnMa:"MA nézet: az elmúlt 48 óra új, 35+ pontos hirdetményei.",vnOda:"ODAÍTÉLÉSEK: nyertes-kihirdetés vagy szerződés-módosítás — itt a nyertes kivitelező a sales-célpont.",
- mainNote:"ÉLŐ PILOT — VALÓS adatok: SEAP/e-licitatie.ro (158 kiírás → top 19) és TED (163 → 11). Pontozás: szabálymotor + Claude AI-korrekció. Éles rendszerben óránként, magától frissül.",
+ mainNote:"ÉLŐ PILOT — VALÓS adatok: SEAP/e-licitatie.ro + TED. Jelenleg {N} releváns találat ({S} SEAP + {T} TED). Pontozás: szabálymotor + Claude AI-korrekció. Napi automatikus frissítés hétköznaponként 07:07-kor.",
  statH:"Statisztika — élő pilot-adat",statT:"releváns tender, össz.",statB:"Pontsáv-eloszlás (db)",statP:"Termékcsoport-találatok (db)",statC:"Megyék össz-projektérték szerint",statTy:"Típus szerint",
  adminH:"Admin — kulcsszó-csomagok és küszöbök (pilot: csak megtekintés)",save:"Mentés",
  fresh1:"Adatállapot:",fresh2:"· napi automatikus frissítés hétköznaponként 07:07-kor (TED + SEAP élő lekérés).",freshOld:"⚠️ Az adatok több mint 24 órásak!"},
@@ -422,10 +423,10 @@ ro:{radar:"Radar",seap:"SEAP",ted:"TED",ma:"Azi",oda:"Atribuiri",kiv:"Constructo
  clear:"Șterge filtrele",exp:"⬇ Export Excel",new_:"noi",user:"vizualizare pilot",nap:"zile",lejart:"EXPIRAT",orig:"original ↗",origFull:"anunțul original ↗",
  st:{"ÚJ":"NOU","MEGNÉZVE":"VĂZUT","ÉRDEKES":"INTERESANT","SALES MEGKERESTE":"CONTACTAT","AJÁNLAT KÉSZÜL":"OFERTĂ ÎN LUCRU","NEM ÉRDEKES":"NEINTERESANT"},
  dAlap:"Date de bază",dKiiro:"Autoritate",dHely:"Locație",dErtek:"Valoare estimată",dHat:"Termen",dForras:"Sursă",dFin:"Finanțare",dNyertes:"Câștigător",dPont:"Punctaj",dSzab:"Motor de reguli",dAI:"Corecție AI",dVeg:"Final",dKw:"Cuvinte-cheie detectate",dElem:"Analiză AI",dAkc:"Acțiune recomandată",dMegj:"Notă",dKapcs:"Contact (autoritate contractantă)",dKapcsNa:"— se completează automat pentru rezultatele cu scor 60+ (rulare zilnică)",dPh:"Scrie o notă… (în sistemul live se salvează + audit trail)",
- vnSeap:"SEAP/SICAP (e-licitatie.ro) — top 10 din 130 anunțuri noi de lucrări (1 iul. – 8 iul.), interogare API live.",
- vnTed:"TED (ted.europa.eu) — licitații românești peste pragul UE: 18 relevante din 166 (1 iul. – 8 iul.).",
+ vnSeap:"SEAP/SICAP (e-licitatie.ro) — {S} rezultate relevante din interogarea API live zilnică.",
+ vnTed:"TED (ted.europa.eu) — licitații românești peste pragul UE: {T} rezultate relevante.",
  vnMa:"Vizualizarea AZI: anunțuri noi din ultimele 48h cu scor 35+.",vnOda:"ATRIBUIRI: anunțuri de câștigător sau modificări de contract — câștigătorul e ținta de vânzări.",
- mainNote:"PILOT LIVE — date REALE: SEAP/e-licitatie.ro (158 anunțuri → top 19) și TED (163 → 11). Punctaj: motor de reguli + corecție Claude AI. În sistemul live se actualizează automat, din oră în oră.",
+ mainNote:"PILOT LIVE — date REALE: SEAP/e-licitatie.ro + TED. În prezent {N} rezultate relevante ({S} SEAP + {T} TED). Punctaj: motor de reguli + corecție Claude AI. Actualizare automată zilnică în zilele lucrătoare la 07:07.",
  statH:"Statistici — date pilot live",statT:"licitații relevante, total",statB:"Distribuția scorurilor (buc.)",statP:"Grupe de produse (buc.)",statC:"Județe după valoarea totală",statTy:"După tip",
  adminH:"Admin — pachete de cuvinte-cheie și praguri (pilot: doar vizualizare)",save:"Salvează",
  fresh1:"Stare date:",fresh2:"· actualizare automată zilnică în zilele lucrătoare la 07:07 (interogare live TED + SEAP).",freshOld:"⚠️ Datele au peste 24 de ore!"}};
@@ -444,7 +445,8 @@ function applyLang(){
   keep(fCounty,'<option value="">'+tr('fc0')+'</option>'+[...new Set(T.map(t=>t.county))].sort().map(x=>'<option value="'+x+'">'+cjudDisp(x)+'</option>').join(''));
   keep(fProd,'<option value="">'+tr('fp0')+'</option>'+[...new Set(T.flatMap(t=>t.prods))].sort().map(x=>'<option value="'+x+'">'+prodDisp(x)+'</option>').join(''));
   btnClear.textContent=tr('clear'); btnExport.textContent=tr('exp');
-  document.getElementById('mainNote').textContent=tr('mainNote');
+  const _seapN=T.filter(t=>t.src&&t.src.indexOf('SEAP')===0).length,_tedN=T.filter(t=>t.src&&t.src.indexOf('TED')===0).length;
+  document.getElementById('mainNote').textContent=tr('mainNote').replace('{N}',T.length).replace('{S}',_seapN).replace('{T}',_tedN);
   document.getElementById('userLbl').textContent=tr('user')+' · '+new Date().toLocaleDateString(L==='ro'?'ro-RO':'hu-HU');
   const hu=document.getElementById('lang-hu'), ro=document.getElementById('lang-ro');
   hu.style.background=L==='hu'?'var(--accent)':'none'; hu.style.color=L==='hu'?'#fff':'var(--muted)';
@@ -480,8 +482,8 @@ function setView(v){
   odaPanel.style.display = v==='oda'?'block':'none';
   guidePanel.style.display = v==='guide'?'block':'none';
   viewNote.style.display = (v==='seap'||v==='ted')?'block':'none';
-  if(v==='seap') viewNote.textContent=tr('vnSeap');
-  if(v==='ted') viewNote.textContent=tr('vnTed');
+  if(v==='seap') viewNote.textContent=tr('vnSeap').replace('{S}',T.filter(function(t){return t.src&&t.src.indexOf('SEAP')===0;}).length);
+  if(v==='ted') viewNote.textContent=tr('vnTed').replace('{T}',T.filter(function(t){return t.src&&t.src.indexOf('TED')===0;}).length);
   if(v==='ma') viewNote.textContent=tr('vnMa');
   if(v==='oda') viewNote.textContent=tr('vnOda');
   if(v==='stat') renderStats();
@@ -542,5 +544,5 @@ function renderAdmin(){
 applyLang();
 </script>
 </body>
-<!-- redeploy 20260709-123922 -->
+<!-- redeploy 20260709-125111 -->
 </html>
