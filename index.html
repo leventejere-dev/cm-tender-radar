@@ -226,9 +226,11 @@ function kRegionBasis(k){return (k.city&&CITY2CJUD[_rn(k.city)])?'hq':'proj';}
 function kRegion(k){var hc=(k.city&&CITY2CJUD[_rn(k.city)])?CITY2CJUD[_rn(k.city)]:null;return hc?regionOf(hc):regionOf(firstCounty(k.county));}
 function kFor(name){var nk=nmw(name);if(nk.length<4)return null;return K.find(function(k){return nmw(k.name)===nk;})||K.find(function(k){var kn=nmw(k.name);return kn.includes(nk)||nk.includes(kn);})||null;}
 function odRegionInfo(o){var ld=leaderOf(o.w);if(ld){var k=kFor(ld);if(k){var r=kRegion(k);if(r)return {region:r,basis:'hq',county:kHqCounty(k)};}}return {region:regionOf(o.c),basis:'proj',county:o.c};}
+function odProjRegion(o){return regionOf(o.c);}
+function odHqRegion(o){var ld=leaderOf(o.w);if(ld){var k=kFor(ld);if(k&&kRegionBasis(k)==='hq')return kRegion(k);}return null;}
 function kStats(k){var ps=projFor(k.name);var scs=ps.map(odScore);var tot=ps.reduce(function(a,o){return a+(o.v||0);},0);
  return {n:ps.length||k.wins||0, avg:scs.length?Math.round(scs.reduce(function(a,b){return a+b;},0)/scs.length):null, max:scs.length?Math.max.apply(null,scs):null, min:scs.length?Math.min.apply(null,scs):null, tot:tot||k.valM||0};}
-function regChipsOda(){var c={};OD.forEach(function(o){var r=odRegionInfo(o).region;if(r)c[r]=(c[r]||0)+1;});
+function regChipsOda(){var c={};OD.forEach(function(o){var r=odProjRegion(o);if(r)c[r]=(c[r]||0)+1;});
  return REGIONS.map(function(r){var act=odRegFilter===r;return '<span onclick="odRegFilter=\''+(act?'':r)+'\';renderOda();" class="chip" style="cursor:pointer;background:'+(act?'var(--accent)':'var(--panel2)')+';color:'+(act?'#fff':'var(--text)')+';border:1px solid var(--border)">'+r+': <b>'+(c[r]||0)+'</b></span>';}).join(' ');}
 function regChipsKiv(){var c={};K.forEach(function(k){var r=kRegion(k);if(r)c[r]=(c[r]||0)+1;});
  return REGIONS.map(function(r){var act=kivRegFilter===r;return '<span onclick="kivRegFilter=\''+(act?'':r)+'\';renderKiv();" class="chip" style="cursor:pointer;background:'+(act?'var(--accent)':'var(--panel2)')+';color:'+(act?'#fff':'var(--text)')+';border:1px solid var(--border)">'+r+': <b>'+(c[r]||0)+'</b></span>';}).join(' ');}
@@ -274,7 +276,7 @@ function renderOda(){
    +'<button class="odSortBtn'+(odSort==='date'?' on':'')+'" data-s="date" onclick="odSetSort(\'date\')">'+(hu?'Dátum':'Data')+'</button>'
    +'</div>'
    +'<div style="overflow:auto"><table style="width:100%"><thead><tr>'
-   +'<th>'+(hu?'Pont':'Scor')+'</th><th>'+(hu?'Dátum':'Data')+'</th><th>'+(hu?'Érték':'Valoare')+'</th><th><span title="'+(hu?'A Régió a nyertes kivitelező SZÉKHELYE szerint; a projekt megyéje a következő oszlopban áll.':'Regiunea = după SEDIUL constructorului câștigător; județul proiectului este în coloana următoare.')+'" style="cursor:help;border-bottom:1px dotted var(--muted)">'+(hu?'Régió':'Regiune')+' ⓘ</span></th><th>'+(hu?'Projekt megye':'Județ proiect')+'</th><th>'+(hu?'Típus':'Tip')+'</th><th>'+(hu?'Nyertes (vezető kiemelve)':'Câștigător (lider)')+'</th><th>'+(hu?'Tender':'Licitație')+'</th><th>'+(hu?'Forrás':'Sursă')+'</th>'
+   +'<th>'+(hu?'Pont':'Scor')+'</th><th>'+(hu?'Dátum':'Data')+'</th><th>'+(hu?'Érték':'Valoare')+'</th><th><span title="'+(hu?'A Régió a PROJEKT helyszíne szerint (a sales-routing alapja). Ha a nyertes kivitelező más régióból való, a cellában külön jelezzük (· kiv.: X).':'Regiunea = după LOCAȚIA proiectului (baza rutării la vânzări). Dacă constructorul câștigător e din altă regiune, se marchează în celulă (· constr.: X).')+'" style="cursor:help;border-bottom:1px dotted var(--muted)">'+(hu?'Régió':'Regiune')+' ⓘ</span></th><th>'+(hu?'Projekt megye':'Județ proiect')+'</th><th>'+(hu?'Típus':'Tip')+'</th><th>'+(hu?'Nyertes (vezető kiemelve)':'Câștigător (lider)')+'</th><th>'+(hu?'Tender':'Licitație')+'</th><th>'+(hu?'Forrás':'Sursă')+'</th>'
    +'</tr></thead><tbody id="odaBody"></tbody></table></div>';
   filterOda('');
 }
@@ -282,15 +284,15 @@ function filterOda(qv){
   var hu=L==='hu';
   var nm=function(s){return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');};
   var f=nm(qv);
-  var rows=OD.filter(function(o){return !f||nm(o.w+' '+o.c+' '+cjudRO(o.c)+' '+o.p+' '+(L==='ro'?(PTYPE_RO[o.p]||''):'')+' '+o.t+' '+(odRegionInfo(o).region||'')).includes(f);});
-  if(odRegFilter) rows=rows.filter(function(o){return odRegionInfo(o).region===odRegFilter;});
+  var rows=OD.filter(function(o){return !f||nm(o.w+' '+o.c+' '+cjudRO(o.c)+' '+o.p+' '+(L==='ro'?(PTYPE_RO[o.p]||''):'')+' '+o.t+' '+(odProjRegion(o)||'')).includes(f);});
+  if(odRegFilter) rows=rows.filter(function(o){return odProjRegion(o)===odRegFilter;});
   if(odSort==='score') rows=rows.slice().sort(function(a,b){return odScore(b)-odScore(a);});
   else if(odSort==='value') rows=rows.slice().sort(function(a,b){return (b.v||0)-(a.v||0);});
   else rows=rows.slice().sort(function(a,b){return (b.d||'').localeCompare(a.d||'');});
   document.getElementById('odaBody').innerHTML = rows.map(function(o){
     var val=o.v?o.v+' M':'—';
-    var ri=odRegionInfo(o);
-    var regCell = ri.region ? ri.region : '<span style="color:var(--muted)">—</span>';
+    var _pr=odProjRegion(o), _hq=odHqRegion(o);
+    var regCell = _pr ? (_pr + ((_hq&&_hq!==_pr) ? ' <span style="color:var(--muted);font-size:10px" title="'+(hu?'a nyertes kivitelező székhely-régiója (más, mint a projekté)':'regiunea sediului constructorului (diferită de a proiectului)')+'">· '+(hu?'kiv.':'constr.')+': '+_hq+'</span>' : '')) : '<span style="color:var(--muted)">—</span>';
     return '<tr><td><span class="score '+sc(odScore(o))+'" style="min-width:34px;padding:3px 0;font-size:12px">'+odScore(o)+'</span></td>'
       +'<td style="white-space:nowrap;color:var(--muted)">'+o.d+'</td>'
       +'<td style="white-space:nowrap;color:var(--muted)">'+val+'</td>'
@@ -549,5 +551,5 @@ function renderAdmin(){
 applyLang();
 </script>
 </body>
-<!-- redeploy 20260709-132326 -->
+<!-- redeploy 20260709-133524 -->
 </html>
