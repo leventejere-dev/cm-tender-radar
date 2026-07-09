@@ -246,6 +246,8 @@ const PTYPE_RO={'Épület':'Clădire','Kórház':'Spital','Iskola':'Școală','S
 const PRODS_RO={'TETOFEDES':'Acoperiș','HOMLOKZAT':'Fațadă','CSATORNA':'Pluvial','ALU_PROFIL':'Profil alu','ALU_LEMEZ':'Tablă alu','SZERKEZET':'Structură','HORGANYZOTT':'Tablă zincată','REZ':'Cupru','INOX':'Inox','ACP':'ACP','TRAPEZLEMEZ':'Tablă trapez.','NYILASZARO':'—'};
 function ptypeDisp(x){return (typeof L!=='undefined'&&L==='ro')?(PTYPE_RO[(x||'').trim()]||x):x;}
 function prodDisp(x){return (typeof L!=='undefined'&&L==='ro')?(PRODS_RO[(x||'').trim()]||x):x;}
+function regInfoOda(){var hu=L==='hu';alert(hu?'RÉGIÓ — Odaítélések\n\nA régió a PROJEKT helyszíne szerint számolódik: ez alapján tudjátok, melyik régiófelelős sales kolléga kezdje a megkeresést.\n\nHa a nyertes kivitelező más régióból való, a cellában „· kiv.: X" jelzi.\n\nA „Projekt megye" oszlop a projekt tényleges megyéjét mutatja.\n\n4 sales-régió: Ardeal, Banat, Moldova, Muntenia.':'REGIUNE — Atribuiri\n\nRegiunea se calculează după LOCAȚIA proiectului: astfel știți ce coleg de vânzări regional începe contactarea.\n\nDacă constructorul câștigător e din altă regiune, se marchează „· constr.: X".\n\nColoana „Județ proiect" arată județul real al proiectului.\n\n4 regiuni de vânzări: Ardeal, Banat, Moldova, Muntenia.');}
+function regInfoKiv(){var hu=L==='hu';alert(hu?'RÉGIÓ — Kivitelezők\n\nItt a régió a KIVITELEZŐ SZÉKHELYE szerint van (a cég telephelye). Ismeretlen székhelynél a cég domináns projekt-megyéje alapján.\n\n4 sales-régió: Ardeal, Banat, Moldova, Muntenia.':'REGIUNE — Constructori\n\nAici regiunea e după SEDIUL constructorului (sediul firmei). Dacă sediul e necunoscut, după județul dominant al proiectelor firmei.\n\n4 regiuni de vânzări: Ardeal, Banat, Moldova, Muntenia.');}
 /* ===== /SALES-INTEL infra ===== */
 function odScore(o){const t=nmw(o.t);let s=2;
  const A=['ALUMINIU','TABLA','CUPRU','BRONZ','TITAN ZINC','ZINC','INOX','PROFILE ALUMINIU','TABLA ZINCATA'];
@@ -276,7 +278,7 @@ function renderOda(){
    +'<button class="odSortBtn'+(odSort==='date'?' on':'')+'" data-s="date" onclick="odSetSort(\'date\')">'+(hu?'Dátum':'Data')+'</button>'
    +'</div>'
    +'<div style="overflow:auto"><table style="width:100%"><thead><tr>'
-   +'<th>'+(hu?'Pont':'Scor')+'</th><th>'+(hu?'Dátum':'Data')+'</th><th>'+(hu?'Érték':'Valoare')+'</th><th><span title="'+(hu?'A Régió a PROJEKT helyszíne szerint (a sales-routing alapja). Ha a nyertes kivitelező más régióból való, a cellában külön jelezzük (· kiv.: X).':'Regiunea = după LOCAȚIA proiectului (baza rutării la vânzări). Dacă constructorul câștigător e din altă regiune, se marchează în celulă (· constr.: X).')+'" style="cursor:help;border-bottom:1px dotted var(--muted)">'+(hu?'Régió':'Regiune')+' ⓘ</span></th><th>'+(hu?'Projekt megye':'Județ proiect')+'</th><th>'+(hu?'Típus':'Tip')+'</th><th>'+(hu?'Nyertes (vezető kiemelve)':'Câștigător (lider)')+'</th><th>'+(hu?'Tender':'Licitație')+'</th><th>'+(hu?'Forrás':'Sursă')+'</th>'
+   +'<th>'+(hu?'Pont':'Scor')+'</th><th>'+(hu?'Dátum':'Data')+'</th><th>'+(hu?'Érték':'Valoare')+'</th><th>'+(hu?'Régió':'Regiune')+' <span onclick="regInfoOda()" style="cursor:pointer;color:var(--accent2);font-weight:700;padding:0 3px" title="'+(hu?'Kattints a magyarázatért':'Click pentru explicație')+'">ⓘ</span></th><th>'+(hu?'Projekt megye':'Județ proiect')+'</th><th>'+(hu?'Típus':'Tip')+'</th><th>'+(hu?'Nyertes (vezető kiemelve)':'Câștigător (lider)')+'</th><th>'+(hu?'Tender':'Licitație')+'</th><th>'+(hu?'Forrás':'Sursă')+'</th>'
    +'</tr></thead><tbody id="odaBody"></tbody></table></div>';
   filterOda('');
 }
@@ -376,7 +378,7 @@ function renderKiv(){
    +'<button class="kivSortBtn'+(kivSort==='value'?' on':'')+'" data-s="value" onclick="kivSetSort(\'value\')">'+(hu?'Össz-érték':'Valoare')+'</button>'
    +'</div>'
    +'<div style="overflow:auto"><table style="width:100%"><thead><tr>'
-   +'<th>#</th><th>'+(hu?'Kivitelező':'Constructor')+'</th><th><span title="'+(hu?'A Régió a kivitelező SZÉKHELYE szerint; ismeretlen székhelynél a domináns projekt-megye alapján.':'Regiunea = după SEDIUL constructorului; dacă sediul e necunoscut, după județul dominant al proiectelor.')+'" style="cursor:help;border-bottom:1px dotted var(--muted)">'+(hu?'Régió':'Regiune')+' ⓘ</span></th><th>'+(hu?'Nyerés / egyedül':'Câștiguri')+'</th><th>'+(hu?'Projekt':'Proiecte')+'</th><th>'+(hu?'AI átl / max':'Scor med/max')+'</th><th>'+(hu?'Össz-érték*':'Valoare*')+'</th><th>'+(hu?'Megyék':'Județe')+'</th><th>'+(hu?'Kapcsolat':'Contact')+'</th><th>'+(hu?'Projektek':'Proiecte')+'</th>'
+   +'<th>#</th><th>'+(hu?'Kivitelező':'Constructor')+'</th><th>'+(hu?'Régió':'Regiune')+' <span onclick="regInfoKiv()" style="cursor:pointer;color:var(--accent2);font-weight:700;padding:0 3px" title="'+(hu?'Kattints a magyarázatért':'Click pentru explicație')+'">ⓘ</span></th><th>'+(hu?'Nyerés / egyedül':'Câștiguri')+'</th><th>'+(hu?'Projekt':'Proiecte')+'</th><th>'+(hu?'AI átl / max':'Scor med/max')+'</th><th>'+(hu?'Össz-érték*':'Valoare*')+'</th><th>'+(hu?'Megyék':'Județe')+'</th><th>'+(hu?'Kapcsolat':'Contact')+'</th><th>'+(hu?'Projektek':'Proiecte')+'</th>'
    +'</tr></thead><tbody id="kivBody"></tbody></table></div>'
    +'<p style="color:var(--muted);font-size:12px;margin-top:14px;max-width:900px">'+(hu?'* Az érték indikatív (a cég nyertes projektjeinek összege; konzorciumnál tagonként). A régió a kivitelező SZÉKHELYE szerint (● = ismert székhely; egyébként a domináns projektmegye). A nyerésszám a legjobb aktivitás-jel. Forrás: TED. A napi futás bővíti a listát.':'* Valoare indicativă. Regiune după sediu (● = sediu cunoscut). Sursă: TED.')+'</p>';
   filterKiv('');
@@ -551,5 +553,5 @@ function renderAdmin(){
 applyLang();
 </script>
 </body>
-<!-- redeploy 20260709-133524 -->
+<!-- redeploy 20260709-135331 -->
 </html>
