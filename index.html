@@ -253,7 +253,7 @@ function renderOda(){
    +'<div style="margin:2px 0 12px;display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span style="color:var(--muted);font-size:12px">'+(hu?'Régió (kattints a szűréshez):':'Regiune (click):')+'</span> '+regChipsOda()+'</div>'
    + scaleLegend()
    +'<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px">'
-   +'<input id="odaQ" placeholder="'+(hu?'Keresés: cég, megye, típus, tender…':'Căutare…')+'" oninput="filterOda(this.value)" style="flex:1;min-width:220px;max-width:420px;padding:9px 12px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px">'
+   +'<input id="odaQ" placeholder="'+(hu?'Keresés: cég, régió, megye, típus, tender…':'Căutare…')+'" oninput="filterOda(this.value)" style="flex:1;min-width:220px;max-width:420px;padding:9px 12px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px">'
    +'<span style="color:var(--muted);font-size:12px">'+(hu?'Rendezés:':'Sortare:')+'</span>'
    +'<button class="odSortBtn'+(odSort==='score'?' on':'')+'" data-s="score" onclick="odSetSort(\'score\')">'+(hu?'AI-pont':'Scor')+'</button>'
    +'<button class="odSortBtn'+(odSort==='value'?' on':'')+'" data-s="value" onclick="odSetSort(\'value\')">'+(hu?'Érték':'Valoare')+'</button>'
@@ -268,7 +268,7 @@ function filterOda(qv){
   var hu=L==='hu';
   var nm=function(s){return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');};
   var f=nm(qv);
-  var rows=OD.filter(function(o){return !f||nm(o.w+' '+o.c+' '+o.p+' '+o.t).includes(f);});
+  var rows=OD.filter(function(o){return !f||nm(o.w+' '+o.c+' '+o.p+' '+o.t+' '+(odRegionInfo(o).region||'')).includes(f);});
   if(odRegFilter) rows=rows.filter(function(o){return odRegionInfo(o).region===odRegFilter;});
   if(odSort==='score') rows=rows.slice().sort(function(a,b){return odScore(b)-odScore(a);});
   else if(odSort==='value') rows=rows.slice().sort(function(a,b){return (b.v||0)-(a.v||0);});
@@ -353,7 +353,7 @@ function renderKiv(){
    +'<div style="margin:2px 0 12px;display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span style="color:var(--muted);font-size:12px">'+(hu?'Régió (székhely, kattints):':'Regiune (sediu):')+'</span> '+regChipsKiv()+'</div>'
    + scaleLegend()
    +'<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px">'
-   +'<input id="kivQ" placeholder="'+(hu?'Keresés: cég, megye, típus…':'Căutare…')+'" oninput="filterKiv(this.value)" style="flex:1;min-width:220px;max-width:400px;padding:9px 12px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px">'
+   +'<input id="kivQ" placeholder="'+(hu?'Keresés: cég, régió, megye, típus…':'Căutare…')+'" oninput="filterKiv(this.value)" style="flex:1;min-width:220px;max-width:400px;padding:9px 12px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px">'
    +'<span style="color:var(--muted);font-size:12px">'+(hu?'Rendezés:':'Sortare:')+'</span>'
    +'<button class="kivSortBtn'+(kivSort==='wins'?' on':'')+'" data-s="wins" onclick="kivSetSort(\'wins\')">'+(hu?'Aktivitás':'Câștiguri')+'</button>'
    +'<button class="kivSortBtn'+(kivSort==='avg'?' on':'')+'" data-s="avg" onclick="kivSetSort(\'avg\')">'+(hu?'Átlag AI-pont':'Scor mediu')+'</button>'
@@ -372,7 +372,7 @@ function filterKiv(qv){
   var hu=L==='hu';
   var nm=function(s){return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');};
   var f=nm(qv);
-  var rows=K.map(function(k,i){return {k:k,i:i};}).filter(function(o){return !f||nm(o.k.name+' '+o.k.county+' '+o.k.types+' '+(o.k.city||'')).includes(f);});
+  var rows=K.map(function(k,i){return {k:k,i:i};}).filter(function(o){return !f||nm(o.k.name+' '+o.k.county+' '+o.k.types+' '+(o.k.city||'')+' '+(kRegion(o.k)||'')).includes(f);});
   if(kivRegFilter) rows=rows.filter(function(o){return kRegion(o.k)===kivRegFilter;});
   if(kivSort==='avg') rows=rows.slice().sort(function(a,b){return (kStats(b.k).avg||0)-(kStats(a.k).avg||0);});
   else if(kivSort==='value') rows=rows.slice().sort(function(a,b){return (kStats(b.k).tot||0)-(kStats(a.k).tot||0);});
