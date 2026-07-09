@@ -282,7 +282,7 @@ function filterOda(qv){
   var hu=L==='hu';
   var nm=function(s){return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');};
   var f=nm(qv);
-  var rows=OD.filter(function(o){return !f||nm(o.w+' '+o.c+' '+cjudRO(o.c)+' '+o.p+' '+o.t+' '+(odRegionInfo(o).region||'')).includes(f);});
+  var rows=OD.filter(function(o){return !f||nm(o.w+' '+o.c+' '+cjudRO(o.c)+' '+o.p+' '+(L==='ro'?(PTYPE_RO[o.p]||''):'')+' '+o.t+' '+(odRegionInfo(o).region||'')).includes(f);});
   if(odRegFilter) rows=rows.filter(function(o){return odRegionInfo(o).region===odRegFilter;});
   if(odSort==='score') rows=rows.slice().sort(function(a,b){return odScore(b)-odScore(a);});
   else if(odSort==='value') rows=rows.slice().sort(function(a,b){return (b.v||0)-(a.v||0);});
@@ -400,7 +400,7 @@ function filterKiv(qv){
     var contact=[k.email?'<a class="src" href="mailto:'+k.email+'">'+k.email+'</a>':'',k.web?'<a class="src" href="'+k.web+'" target="_blank">web</a>':'',k.city?'<span style="color:var(--muted)">'+k.city+'</span>':''].filter(Boolean).join(' · ')||'<span style="color:var(--muted)">—</span>';
     var ps=projFor(k.name);
     var projCell=ps.length?'<a class="src" href="#" onclick="toggleKiv('+i+');return false">'+ps.length+' '+(hu?'projekt':'proiecte')+' ▾</a>':(k.u?'<a class="src" href="'+k.u+'" target="_blank">'+(hu?'projekt':'proiect')+' ↗</a>':'<span style="color:var(--muted)">—</span>');
-    var expand='<tr id="kivd'+i+'" style="display:none"><td></td><td colspan="9" style="padding:0 12px 12px"><div style="background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:6px 12px">'+(ps.map(function(o2){return '<div style="padding:4px 0;border-bottom:1px solid var(--border);font-size:12px"><span class="score '+sc(odScore(o2))+'" style="min-width:30px;padding:1px 0;font-size:10.5px;margin-right:7px">'+odScore(o2)+'</span><span style="color:var(--muted)">'+o2.d+' · '+(o2.v?o2.v+'M · ':'')+cjudDisp(o2.c)+' · '+o2.p+'</span> — '+o2.t+' <a class="src" href="'+o2.u+'" target="_blank">'+tr('orig')+'</a></div>';}).join('')||'<span style="color:var(--muted);font-size:12px">—</span>')+'</div></td></tr>';
+    var expand='<tr id="kivd'+i+'" style="display:none"><td></td><td colspan="9" style="padding:0 12px 12px"><div style="background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:6px 12px">'+(ps.map(function(o2){return '<div style="padding:4px 0;border-bottom:1px solid var(--border);font-size:12px"><span class="score '+sc(odScore(o2))+'" style="min-width:30px;padding:1px 0;font-size:10.5px;margin-right:7px">'+odScore(o2)+'</span><span style="color:var(--muted)">'+o2.d+' · '+(o2.v?o2.v+'M · ':'')+cjudDisp(o2.c)+' · '+ptypeDisp(o2.p)+'</span> — '+o2.t+' <a class="src" href="'+o2.u+'" target="_blank">'+tr('orig')+'</a></div>';}).join('')||'<span style="color:var(--muted);font-size:12px">—</span>')+'</div></td></tr>';
     return '<tr><td style="color:var(--muted)">'+(pos+1)+'</td><td><b>'+k.name+'</b></td><td style="white-space:nowrap">'+regCell+'</td><td><b>'+k.wins+'</b><span style="color:var(--muted)"> / '+k.solo+'</span></td><td style="text-align:center">'+s.n+'</td><td style="white-space:nowrap">'+avgmax+'</td><td style="color:var(--muted);white-space:nowrap">'+val+'</td><td>'+cjudStr(k.county)+'</td><td>'+contact+'</td><td>'+projCell+'</td></tr>'+expand;
   }).join('');
 }
@@ -549,5 +549,5 @@ function renderAdmin(){
 applyLang();
 </script>
 </body>
-<!-- redeploy 20260709-130811 -->
+<!-- redeploy 20260709-131947 -->
 </html>
