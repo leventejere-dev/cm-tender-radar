@@ -143,7 +143,7 @@ const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
 
 function fills(){
   const c=[...new Set(T.map(t=>t.county))].sort(), p=[...new Set(T.flatMap(t=>t.prods))].sort();
-  c.forEach(x=>fCounty.add(new Option(x,x))); p.forEach(x=>fProd.add(new Option(x,x)));
+  c.forEach(x=>fCounty.add(new Option(cjudDisp(x),x))); p.forEach(x=>fProd.add(new Option(prodDisp(x),x)));
 }
 function view(){
   let r=T.filter(t=>viewOk(t)&&
@@ -156,8 +156,8 @@ function view(){
     return `<tr class="row" onclick="openD(${t.id})">
      <td><span class="score ${sc(t.score)}">${t.score}</span></td>
      <td class="title-cell"><b>${t.title}</b><div class="sum">${sums(t)}</div>${t.winner?`<div class="winner">${L==='hu'?'Nyertes':'Câștigător'}: <b>${t.winner.name}</b>${t.winner.email?` · <a class="src" href="mailto:${t.winner.email}">${t.winner.email}</a>`:''}</div>`:''}
-       <div class="chips">${t.fund?`<span class="chip fund fund-${t.fund}" title="${FUNDT[t.fund]||''}">${FUND[t.fund]||t.fund}</span>`:''}${t.prods.map(p=>`<span class="chip ${p.includes('ALU')?'alu':''}">${p}</span>`).join('')}</div></td>
-     <td class="meta"><b>${t.county}</b><br>${t.city}<br>${t.auth}${t.contact&&t.contact.email?'<br><a class="src" href="mailto:'+t.contact.email+'" onclick="event.stopPropagation()">✉ '+t.contact.email+'</a>':''}${t.contact&&t.contact.phone?'<br><span style="color:var(--accent2)">☎ '+t.contact.phone+'</span>':''}</td>
+       <div class="chips">${t.fund?`<span class="chip fund fund-${t.fund}" title="${FUNDT[t.fund]||''}">${FUND[t.fund]||t.fund}</span>`:''}${t.prods.map(p=>`<span class="chip ${p.includes('ALU')?'alu':''}">${prodDisp(p)}</span>`).join('')}</div></td>
+     <td class="meta"><b>${cjudDisp(t.county)}</b><br>${t.city}<br>${t.auth}${t.contact&&t.contact.email?'<br><a class="src" href="mailto:'+t.contact.email+'" onclick="event.stopPropagation()">✉ '+t.contact.email+'</a>':''}${t.contact&&t.contact.phone?'<br><span style="color:var(--accent2)">☎ '+t.contact.phone+'</span>':''}</td>
      <td class="meta"><b>${t.deadline||'—'}</b><br><span class="${dlc}">${dl===null?'':(dl<0?tr('lejart'):dl+' '+tr('nap'))}</span></td>
      <td class="meta"><b>${fmtV(t.value)}</b></td>
      <td><span class="status ${stc(t.status)}">${st(t.status)}</span><br><br>
@@ -179,7 +179,7 @@ function openD(id){const t=T.find(x=>x.id===id);
   dBody.innerHTML=`<span class="score ${sc(t.score)}" style="font-size:18px;min-width:60px">${t.score}</span>
    <h2 style="margin-top:12px">${t.title}</h2>
    <div class="sec-t">${tr('dAlap')}</div><div class="box kv">
-     <span class="k">${tr('dKiiro')}</span><span>${t.auth}</span><span class="k">${tr('dHely')}</span><span>${t.county} — ${t.city}</span>
+     <span class="k">${tr('dKiiro')}</span><span>${t.auth}</span><span class="k">${tr('dHely')}</span><span>${cjudDisp(t.county)} — ${t.city}</span>
      <span class="k">${tr('dErtek')}</span><span>${fmtV(t.value)}</span><span class="k">${tr('dHat')}</span><span>${t.deadline||'—'} ${days(t.deadline)!==null?(days(t.deadline)<0?'('+tr('lejart')+')':'('+days(t.deadline)+' '+tr('nap')+')'):''}</span>
      <span class="k">CPV</span><span>${t.cpv}</span><span class="k">${tr('dForras')}</span><span>${t.src} — <a class="src" href="${t.url}" target="_blank">${tr('origFull')}</a></span><span class="k">${tr('dFin')}</span><span>${fundText(t.fund)}</span>${t.winner?`<span class="k">${tr('dNyertes')}</span><span>${t.winner.name}${t.winner.email?' — <a class="src" href="mailto:'+t.winner.email+'">'+t.winner.email+'</a>':''}</span>`:''}</div>
    <div class="sec-t">${tr('dKapcs')}</div><div class="box">${t.contact?((t.contact.email?'✉ <a class="src" href="mailto:'+t.contact.email+'">'+t.contact.email+'</a>&nbsp;&nbsp;':'')+(t.contact.phone?'☎ '+t.contact.phone:'')):tr('dKapcsNa')}</div><div class="sec-t">${tr('dPont')}</div><div class="box">${tr('dSzab')}: <b>${t.rule}</b> &nbsp;·&nbsp; ${tr('dAI')}: <b>${t.delta>0?'+':''}${t.delta}</b> &nbsp;·&nbsp; ${tr('dVeg')}: <b>${t.score}/100</b><br><br>
@@ -231,6 +231,14 @@ function odSetSort(s){odSort=s;var q=document.getElementById('odaQ');filterOda(q
 function kivSetSort(s){kivSort=s;var q=document.getElementById('kivQ');filterKiv(q?q.value:'');document.querySelectorAll('.kivSortBtn').forEach(function(b){b.classList.toggle('on',b.dataset.s===s);});}
 function winnersHtml(w){if(!w)return '<span style="color:var(--muted)">—</span>';var hu=L==='hu';var parts=String(w).split(',').map(function(x){return x.trim();}).filter(Boolean);
  return parts.map(function(p,i){return i===0?('<b style="color:var(--good)">'+p+'</b> <span class="chip" style="background:rgba(244,180,34,.18);color:var(--mid);font-size:9px;padding:1px 5px;vertical-align:middle">'+(hu?'VEZETŐ':'LIDER')+'</span>'):('<span style="color:var(--muted)">'+p+'</span>');}).join(', ');}
+const CJUD_RO={'Fehér':'Alba','Arad':'Arad','Bihar':'Bihor','Beszterce':'Bistrița-Năsăud','Beszterce-Naszód':'Bistrița-Năsăud','Brassó':'Brașov','Krassó':'Caraș-Severin','Krassó-Szörény':'Caraș-Severin','Kolozs':'Cluj','Kovászna':'Covasna','Hargita':'Harghita','Hunyad':'Hunedoara','Máramaros':'Maramureș','Maros':'Mureș','Szeben':'Sibiu','Szilágy':'Sălaj','Szatmár':'Satu Mare','Temes':'Timiș','Bákó':'Bacău','Botosán':'Botoșani','Jászvásár':'Iași','Neamt':'Neamț','Szucsáva':'Suceava','Vaslui':'Vaslui','Bukarest':'București'};
+function cjudRO(x){return CJUD_RO[(x||'').trim()]||x;}
+function cjudDisp(x){return (typeof L!=='undefined'&&L==='ro')?cjudRO(x):x;}
+function cjudStr(s){return (s||'').replace(/([^\s()\d][^()\d]*?)(\(\d+\))/g,function(m,nm,cnt){return cjudDisp(nm.trim())+cnt;});}
+const PTYPE_RO={'Épület':'Clădire','Kórház':'Spital','Iskola':'Școală','Sport':'Sport','Tető':'Acoperiș','Homlokzat':'Fațadă','Épület ált.':'Clădire','Homlokzat/energetika':'Fațadă/energetic','Csatorna':'Pluvial'};
+const PRODS_RO={'TETOFEDES':'Acoperiș','HOMLOKZAT':'Fațadă','CSATORNA':'Pluvial','ALU_PROFIL':'Profil alu','ALU_LEMEZ':'Tablă alu','SZERKEZET':'Structură','HORGANYZOTT':'Tablă zincată','REZ':'Cupru','INOX':'Inox','ACP':'ACP','TRAPEZLEMEZ':'Tablă trapez.','NYILASZARO':'—'};
+function ptypeDisp(x){return (typeof L!=='undefined'&&L==='ro')?(PTYPE_RO[(x||'').trim()]||x):x;}
+function prodDisp(x){return (typeof L!=='undefined'&&L==='ro')?(PRODS_RO[(x||'').trim()]||x):x;}
 /* ===== /SALES-INTEL infra ===== */
 function odScore(o){const t=nmw(o.t);let s=2;
  const A=['ALUMINIU','TABLA','CUPRU','BRONZ','TITAN ZINC','ZINC','INOX','PROFILE ALUMINIU','TABLA ZINCATA'];
@@ -268,7 +276,7 @@ function filterOda(qv){
   var hu=L==='hu';
   var nm=function(s){return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');};
   var f=nm(qv);
-  var rows=OD.filter(function(o){return !f||nm(o.w+' '+o.c+' '+o.p+' '+o.t+' '+(odRegionInfo(o).region||'')).includes(f);});
+  var rows=OD.filter(function(o){return !f||nm(o.w+' '+o.c+' '+cjudRO(o.c)+' '+o.p+' '+o.t+' '+(odRegionInfo(o).region||'')).includes(f);});
   if(odRegFilter) rows=rows.filter(function(o){return odRegionInfo(o).region===odRegFilter;});
   if(odSort==='score') rows=rows.slice().sort(function(a,b){return odScore(b)-odScore(a);});
   else if(odSort==='value') rows=rows.slice().sort(function(a,b){return (b.v||0)-(a.v||0);});
@@ -276,16 +284,16 @@ function filterOda(qv){
   document.getElementById('odaBody').innerHTML = rows.map(function(o){
     var val=o.v?o.v+' M':'—';
     var ri=odRegionInfo(o);
-    var regCell = ri.region ? (ri.region + (ri.basis==='hq'?' <span title="'+(hu?'kivitelező székhelye alapján':'după sediul constructorului')+'" style="color:var(--good);font-size:10px">●</span>':'')) : '<span style="color:var(--muted)">—</span>';
+    var regCell = ri.region ? ri.region : '<span style="color:var(--muted)">—</span>';
     return '<tr><td><span class="score '+sc(odScore(o))+'" style="min-width:34px;padding:3px 0;font-size:12px">'+odScore(o)+'</span></td>'
       +'<td style="white-space:nowrap;color:var(--muted)">'+o.d+'</td>'
       +'<td style="white-space:nowrap;color:var(--muted)">'+val+'</td>'
       +'<td style="white-space:nowrap">'+regCell+'</td>'
-      +'<td>'+o.c+'</td>'
-      +'<td>'+o.p+'</td>'
+      +'<td>'+cjudDisp(o.c)+'</td>'
+      +'<td>'+ptypeDisp(o.p)+'</td>'
       +'<td>'+winnersHtml(o.w)+'</td>'
       +'<td>'+o.t+'</td>'
-      +'<td><a class="src" href="'+o.u+'" target="_blank">eredeti ↗</a></td></tr>';
+      +'<td><a class="src" href="'+o.u+'" target="_blank">'+tr('orig')+'</a></td></tr>';
   }).join('');
 }
 
@@ -372,7 +380,7 @@ function filterKiv(qv){
   var hu=L==='hu';
   var nm=function(s){return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');};
   var f=nm(qv);
-  var rows=K.map(function(k,i){return {k:k,i:i};}).filter(function(o){return !f||nm(o.k.name+' '+o.k.county+' '+o.k.types+' '+(o.k.city||'')+' '+(kRegion(o.k)||'')).includes(f);});
+  var rows=K.map(function(k,i){return {k:k,i:i};}).filter(function(o){return !f||nm(o.k.name+' '+o.k.county+' '+cjudStr(o.k.county)+' '+o.k.types+' '+(o.k.city||'')+' '+(kRegion(o.k)||'')).includes(f);});
   if(kivRegFilter) rows=rows.filter(function(o){return kRegion(o.k)===kivRegFilter;});
   if(kivSort==='avg') rows=rows.slice().sort(function(a,b){return (kStats(b.k).avg||0)-(kStats(a.k).avg||0);});
   else if(kivSort==='value') rows=rows.slice().sort(function(a,b){return (kStats(b.k).tot||0)-(kStats(a.k).tot||0);});
@@ -380,14 +388,14 @@ function filterKiv(qv){
   document.getElementById('kivBody').innerHTML = rows.map(function(o,pos){
     var k=o.k, i=o.i, s=kStats(k);
     var reg=kRegion(k), basis=kRegionBasis(k);
-    var regCell=reg?(reg+(basis==='hq'?' <span title="'+(hu?'ismert székhely':'sediu cunoscut')+'" style="color:var(--good);font-size:10px">●</span>':'')):'<span style="color:var(--muted)">—</span>';
+    var regCell=reg?reg:'<span style="color:var(--muted)">—</span>';
     var val=s.tot?s.tot+' M':'—';
     var avgmax=(s.avg!=null)?('<b style="color:'+(s.avg>=60?'var(--good)':'var(--text)')+'">'+s.avg+'</b> / '+s.max):'<span style="color:var(--muted)">—</span>';
     var contact=[k.email?'<a class="src" href="mailto:'+k.email+'">'+k.email+'</a>':'',k.web?'<a class="src" href="'+k.web+'" target="_blank">web</a>':'',k.city?'<span style="color:var(--muted)">'+k.city+'</span>':''].filter(Boolean).join(' · ')||'<span style="color:var(--muted)">—</span>';
     var ps=projFor(k.name);
-    var projCell=ps.length?'<a class="src" href="#" onclick="toggleKiv('+i+');return false">'+ps.length+' projekt ▾</a>':(k.u?'<a class="src" href="'+k.u+'" target="_blank">projekt ↗</a>':'<span style="color:var(--muted)">—</span>');
-    var expand='<tr id="kivd'+i+'" style="display:none"><td></td><td colspan="9" style="padding:0 12px 12px"><div style="background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:6px 12px">'+(ps.map(function(o2){return '<div style="padding:4px 0;border-bottom:1px solid var(--border);font-size:12px"><span class="score '+sc(odScore(o2))+'" style="min-width:30px;padding:1px 0;font-size:10.5px;margin-right:7px">'+odScore(o2)+'</span><span style="color:var(--muted)">'+o2.d+' · '+(o2.v?o2.v+'M · ':'')+o2.c+' · '+o2.p+'</span> — '+o2.t+' <a class="src" href="'+o2.u+'" target="_blank">eredeti ↗</a></div>';}).join('')||'<span style="color:var(--muted);font-size:12px">—</span>')+'</div></td></tr>';
-    return '<tr><td style="color:var(--muted)">'+(pos+1)+'</td><td><b>'+k.name+'</b></td><td style="white-space:nowrap">'+regCell+'</td><td><b>'+k.wins+'</b><span style="color:var(--muted)"> / '+k.solo+'</span></td><td style="text-align:center">'+s.n+'</td><td style="white-space:nowrap">'+avgmax+'</td><td style="color:var(--muted);white-space:nowrap">'+val+'</td><td>'+k.county+'</td><td>'+contact+'</td><td>'+projCell+'</td></tr>'+expand;
+    var projCell=ps.length?'<a class="src" href="#" onclick="toggleKiv('+i+');return false">'+ps.length+' '+(hu?'projekt':'proiecte')+' ▾</a>':(k.u?'<a class="src" href="'+k.u+'" target="_blank">'+(hu?'projekt':'proiect')+' ↗</a>':'<span style="color:var(--muted)">—</span>');
+    var expand='<tr id="kivd'+i+'" style="display:none"><td></td><td colspan="9" style="padding:0 12px 12px"><div style="background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:6px 12px">'+(ps.map(function(o2){return '<div style="padding:4px 0;border-bottom:1px solid var(--border);font-size:12px"><span class="score '+sc(odScore(o2))+'" style="min-width:30px;padding:1px 0;font-size:10.5px;margin-right:7px">'+odScore(o2)+'</span><span style="color:var(--muted)">'+o2.d+' · '+(o2.v?o2.v+'M · ':'')+cjudDisp(o2.c)+' · '+o2.p+'</span> — '+o2.t+' <a class="src" href="'+o2.u+'" target="_blank">'+tr('orig')+'</a></div>';}).join('')||'<span style="color:var(--muted);font-size:12px">—</span>')+'</div></td></tr>';
+    return '<tr><td style="color:var(--muted)">'+(pos+1)+'</td><td><b>'+k.name+'</b></td><td style="white-space:nowrap">'+regCell+'</td><td><b>'+k.wins+'</b><span style="color:var(--muted)"> / '+k.solo+'</span></td><td style="text-align:center">'+s.n+'</td><td style="white-space:nowrap">'+avgmax+'</td><td style="color:var(--muted);white-space:nowrap">'+val+'</td><td>'+cjudStr(k.county)+'</td><td>'+contact+'</td><td>'+projCell+'</td></tr>'+expand;
   }).join('');
 }
 
@@ -433,8 +441,8 @@ function applyLang(){
   const keep=(sel,html_)=>{const v=sel.value; sel.innerHTML=html_; sel.value=v;};
   keep(fScore,'<option value="">'+tr('fs0')+'</option><option value="90">90–100 (HOT)</option><option value="70">70+</option><option value="50">50+</option><option value="35">35+</option>');
   keep(fStatus,'<option value="">'+tr('fst0')+'</option>'+Object.keys(TR.hu.st).map(s=>'<option value="'+s+'">'+st(s)+'</option>').join(''));
-  keep(fCounty,'<option value="">'+tr('fc0')+'</option>'+[...new Set(T.map(t=>t.county))].sort().map(x=>'<option value="'+x+'">'+x+'</option>').join(''));
-  keep(fProd,'<option value="">'+tr('fp0')+'</option>'+[...new Set(T.flatMap(t=>t.prods))].sort().map(x=>'<option value="'+x+'">'+x+'</option>').join(''));
+  keep(fCounty,'<option value="">'+tr('fc0')+'</option>'+[...new Set(T.map(t=>t.county))].sort().map(x=>'<option value="'+x+'">'+cjudDisp(x)+'</option>').join(''));
+  keep(fProd,'<option value="">'+tr('fp0')+'</option>'+[...new Set(T.flatMap(t=>t.prods))].sort().map(x=>'<option value="'+x+'">'+prodDisp(x)+'</option>').join(''));
   btnClear.textContent=tr('clear'); btnExport.textContent=tr('exp');
   document.getElementById('mainNote').textContent=tr('mainNote');
   document.getElementById('userLbl').textContent=tr('user')+' · '+new Date().toLocaleDateString(L==='ro'?'ro-RO':'hu-HU');
@@ -505,12 +513,12 @@ function renderStats(){
     <div><div class="sec" style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">${tr('statB')}</div>
       ${bands.map(b=>bar(b[0],T.filter(b[1]).length,bmax,b[2])).join('')}
       <div class="sec" style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.6px;margin:18px 0 8px">${tr('statP')}</div>
-      ${pRows.map(p=>bar(p[0],p[1],pmax,'var(--accent)')).join('')}</div>
+      ${pRows.map(p=>bar(prodDisp(p[0]),p[1],pmax,'var(--accent)')).join('')}</div>
     <div><div class="sec" style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">${tr('statC')}</div>
-      ${cRows.map(c=>bar(c[0]+' ('+c[1].n+' db)',c[1].v,cmax,'var(--accent2)')).join('')}
+      ${cRows.map(c=>bar(cjudDisp(c[0])+' ('+c[1].n+' '+(L==='ro'?'buc.':'db')+')',c[1].v,cmax,'var(--accent2)')).join('')}
       </div>
    </div>
-   <div class="note" style="padding:16px 0 0">Éles rendszerben itt: heti trendek, forrásonkénti gyűjtési statisztika, konverziós tölcsér (érdekes → megkeresve → ajánlat → nyert), sales-aktivitás.</div>`;
+   <div class="note" style="padding:16px 0 0">${L==='ro'?'În sistemul live: tendințe săptămânale, statistici de colectare pe surse, pâlnie de conversie (interesant → contactat → ofertă → câștigat), activitate de vânzări.':'Éles rendszerben itt: heti trendek, forrásonkénti gyűjtési statisztika, konverziós tölcsér (érdekes → megkeresve → ajánlat → nyert), sales-aktivitás.'}</div>`;
 }
 function renderAdmin(){
   adminPanel.innerHTML = `
@@ -534,5 +542,5 @@ function renderAdmin(){
 applyLang();
 </script>
 </body>
-<!-- redeploy 20260709-103325 -->
+<!-- redeploy 20260709-122021 -->
 </html>
