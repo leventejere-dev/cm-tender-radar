@@ -137,7 +137,7 @@ const T = [{"id": 467014, "score": 78, "rule": 62, "delta": 16, "title": "Creșt
 let sort={k:'score',d:-1};
 const fmtV=v=>v?new Intl.NumberFormat('hu-HU').format(v)+' RON':'n.a.';
 const days=d=>d?Math.ceil((new Date(d)-new Date())/864e5):null;
-const sc=s=>s>=90?'s-hot':s>=70?'s-good':s>=50?'s-mid':'s-low';
+const sc=s=>s>=90?'s-hot':s>=65?'s-good':s>=50?'s-mid':'s-low';
 const stc=s=>({'ÚJ':'st-uj','ÉRDEKES':'st-erdekes','NEM ÉRDEKES':'st-nem','AJÁNLAT KÉSZÜL':'st-ajanlat'}[s]||'');
 const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
 
@@ -167,8 +167,8 @@ function view(){
      <td class="meta">${t.owner}</td>
      <td class="meta">${srcDisp(t.src)}<br><a class="src" href="${t.url}" target="_blank" onclick="event.stopPropagation()">${tr('orig')}</a></td></tr>`;}).join('');
   kHot.textContent=T.filter(t=>t.score>=90&&t.status!=='NEM ÉRDEKES').length;
-  k70.textContent=T.filter(t=>t.score>=70).length;
-  kVal.textContent=(T.filter(t=>t.score>=70&&!['NEM ÉRDEKES'].includes(t.status)).reduce((a,t)=>a+(t.value||0),0)/1e6).toFixed(0)+'M';
+  k70.textContent=T.filter(t=>t.score>=65).length;
+  kVal.textContent=(T.filter(t=>t.score>=65&&!['NEM ÉRDEKES'].includes(t.status)).reduce((a,t)=>a+(t.value||0),0)/1e6).toFixed(0)+'M';
   kDL.textContent=T.filter(t=>days(t.deadline)<=7&&['ÉRDEKES','AJÁNLAT KÉSZÜL','SALES MEGKERESTE'].includes(t.status)).length;
   newBadge.textContent=T.filter(t=>t.status==='ÚJ').length+' '+tr('new_');
 }
@@ -320,7 +320,7 @@ function scaleLegend(){const hu=L==='hu';return `<div style="display:flex;gap:7p
  <span class="chip" style="background:rgba(78,155,124,.2);color:var(--good)">70–89 ${hu?'erős':'puternic'}</span>
  <span class="chip" style="background:rgba(244,180,34,.16);color:var(--mid)">50–69 ${hu?'releváns':'relevant'}</span>
  <span class="chip" style="background:rgba(99,97,92,.28);color:var(--low)">35–49 ${hu?'figyelt':'urmărit'}</span>
- <span style="color:var(--muted)">${hu?'· 70+ → e-mail-riasztás · részletek az Útmutató fülön':'· 70+ → alertă'}</span></div>`;}
+ <span style="color:var(--muted)">${hu?'· 65+ → e-mail-riasztás · részletek az Útmutató fülön':'· 65+ → alertă'}</span></div>`;}
 function renderGuide(){const hu=L==='hu';guidePanel.innerHTML=`
  <h2 style="margin:4px 0 6px">${hu?'Útmutató — hogyan pontoz a CM Tender Radar?':'Ghid — cum punctează CM Tender Radar?'}</h2>
  <p style="color:var(--muted);max-width:900px;margin:0 0 16px">${hu?'Minden tender 0–100 pontot kap, két lépésben: egy determinisztikus szabálymotor adja a nyerspontot (kulcsszó + CPV-kód + érték alapján), majd a Claude AI ±20 ponttal korrigál relevancia szerint. A végső pont = szabálypont + AI-korrekció (0–100 közé vágva).':'Fiecare licitație primește 0–100 puncte în două etape: un motor de reguli determinist calculează scorul brut (cuvinte-cheie + cod CPV + valoare), apoi Claude AI corectează cu ±20 puncte în funcție de relevanță. Scor final = scor reguli + corecție AI (limitat 0–100).'}</p>
@@ -347,7 +347,7 @@ function renderGuide(){const hu=L==='hu';guidePanel.innerHTML=`
    <div style="background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px">
     <div style="color:var(--accent);font-weight:700;margin-bottom:10px">${hu?'Pontskála':'Scală scor'}</div>
     ${scaleLegend()}
-    <p style="font-size:13px;color:var(--muted);margin:6px 0 0">${hu?'<b>70+</b> → automatikus e-mail-riasztás. <b>60+ SEAP</b> → kiírói kontakt begyűjtése.':'<b>70+</b> → alertă e-mail automată. <b>60+ SEAP</b> → colectarea contactului autorității.'}</p>
+    <p style="font-size:13px;color:var(--muted);margin:6px 0 0">${hu?'<b>65+</b> → automatikus e-mail-riasztás. <b>60+ SEAP</b> → kiírói kontakt begyűjtése.':'<b>65+</b> → alertă e-mail automată. <b>60+ SEAP</b> → colectarea contactului autorității.'}</p>
    </div>
    <div style="background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px">
     <div style="color:var(--accent);font-weight:700;margin-bottom:8px">${hu?'Terméktartomány':'Gama de produse'}</div>
@@ -412,7 +412,7 @@ function filterKiv(qv){
 let L = 'hu'; try{ L = localStorage.getItem('cmlang')||'hu'; }catch(e){}
 const TR = {
 hu:{radar:"Radar",seap:"SEAP",ted:"TED",ma:"Ma",oda:"Odaítélések",kiv:"Kivitelezők",guide:"Útmutató",stat:"Statisztika",admin:"Admin",
- kl1:"HOT (90+) most nyitva",kl2:"70+ pontos lehetőség",kl3:"össz-potenciál (nyitott 70+)",kl4:"7 napon belül lejáró figyelt",kl5:"átnézett hirdetmény: 340 SEAP (júl. 10.) + 184 TED (júl. 10.)",
+ kl1:"HOT (90+) most nyitva",kl2:"65+ pontos lehetőség",kl3:"össz-potenciál (nyitott 65+)",kl4:"7 napon belül lejáró figyelt",kl5:"átnézett hirdetmény: 340 SEAP (júl. 10.) + 184 TED (júl. 10.)",
  th1:"Pont ▾",th2:"Tender / AI-összefoglaló",th3:"Helyszín",th4:"Határidő",th5:"Becsült érték",th6:"Státusz",th7:"Felelős",th8:"Forrás",
  q:"Keresés: cím, kiíró, leírás… (ékezet-független)",fs0:"Pontsáv: mind",fc0:"Megye: mind",fst0:"Státusz: mind",fp0:"Termékcsoport: mind",
  clear:"Szűrők törlése",exp:"⬇ Export Excelbe",new_:"új",user:"pilot-nézet",nap:"nap",lejart:"LEJÁRT",orig:"eredeti ↗",origFull:"eredeti kiírás ↗",
@@ -426,7 +426,7 @@ hu:{radar:"Radar",seap:"SEAP",ted:"TED",ma:"Ma",oda:"Odaítélések",kiv:"Kivite
  adminH:"Admin — kulcsszó-csomagok és küszöbök (pilot: csak megtekintés)",save:"Mentés",
  fresh1:"Adatállapot:",fresh2:"· napi automatikus frissítés hétköznaponként 07:07-kor (TED + SEAP élő lekérés).",freshOld:"⚠️ Az adatok több mint 24 órásak!"},
 ro:{radar:"Radar",seap:"SEAP",ted:"TED",ma:"Azi",oda:"Atribuiri",kiv:"Constructori",guide:"Ghid",stat:"Statistici",admin:"Admin",
- kl1:"HOT (90+) deschise acum",kl2:"oportunități cu 70+ puncte",kl3:"potențial total (70+ deschise)",kl4:"urmărite, expiră în 7 zile",kl5:"anunțuri analizate: 340 SEAP (10 iul.) + 184 TED (10 iul.)",
+ kl1:"HOT (90+) deschise acum",kl2:"oportunități cu 65+ puncte",kl3:"potențial total (65+ deschise)",kl4:"urmărite, expiră în 7 zile",kl5:"anunțuri analizate: 340 SEAP (10 iul.) + 184 TED (10 iul.)",
  th1:"Scor ▾",th2:"Licitație / Rezumat AI",th3:"Locație",th4:"Termen",th5:"Valoare estimată",th6:"Stare",th7:"Responsabil",th8:"Sursă",
  q:"Căutare: titlu, autoritate, descriere… (fără diacritice)",fs0:"Interval scor: toate",fc0:"Județ: toate",fst0:"Stare: toate",fp0:"Grupă de produse: toate",
  clear:"Șterge filtrele",exp:"⬇ Export Excel",new_:"noi",user:"vizualizare pilot",nap:"zile",lejart:"EXPIRAT",orig:"original ↗",origFull:"anunțul original ↗",
@@ -449,7 +449,7 @@ function applyLang(){
   ['kl1','kl2','kl3','kl4','kl5','th1','th2','th3','th4','th5','th6','th7','th8'].forEach(k=>{const e=document.getElementById(k); if(e)e.textContent=tr(k);});
   q.placeholder=tr('q');
   const keep=(sel,html_)=>{const v=sel.value; sel.innerHTML=html_; sel.value=v;};
-  keep(fScore,'<option value="">'+tr('fs0')+'</option><option value="90">90–100 (HOT)</option><option value="70">70+</option><option value="50">50+</option><option value="35">35+</option>');
+  keep(fScore,'<option value="">'+tr('fs0')+'</option><option value="90">90–100 (HOT)</option><option value="65">65+</option><option value="50">50+</option><option value="35">35+</option>');
   keep(fStatus,'<option value="">'+tr('fst0')+'</option>'+Object.keys(TR.hu.st).map(s=>'<option value="'+s+'">'+st(s)+'</option>').join(''));
   keep(fCounty,'<option value="">'+tr('fc0')+'</option>'+[...new Set(T.map(t=>t.county))].sort().map(x=>'<option value="'+x+'">'+cjudDisp(x)+'</option>').join(''));
   keep(fProd,'<option value="">'+tr('fp0')+'</option>'+[...new Set(T.flatMap(t=>t.prods))].sort().map(x=>'<option value="'+x+'">'+prodDisp(x)+'</option>').join(''));
@@ -510,7 +510,7 @@ function bar(label,val,max,color){
     <b>${typeof val==='number'&&val>1e5?new Intl.NumberFormat('hu-HU').format(Math.round(val/1e6))+'M RON':val}</b></div>`;
 }
 function renderStats(){
-  const bands=[['90–100 (HOT)',t=>t.score>=90,'var(--hot)'],['70–89',t=>t.score>=70&&t.score<90,'var(--good)'],['50–69',t=>t.score>=50&&t.score<70,'var(--mid)'],['35–49',t=>t.score>=35&&t.score<50,'var(--low)'],['0–34',t=>t.score<35,'#3a4653']];
+  const bands=[['90–100 (HOT)',t=>t.score>=90,'var(--hot)'],['65–89',t=>t.score>=65&&t.score<90,'var(--good)'],['50–64',t=>t.score>=50&&t.score<65,'var(--mid)'],['35–49',t=>t.score>=35&&t.score<50,'var(--low)'],['0–34',t=>t.score<35,'#3a4653']];
   const bmax=Math.max(...bands.map(b=>T.filter(b[1]).length));
   const byC={}; T.forEach(t=>{byC[t.county]=byC[t.county]||{n:0,v:0}; byC[t.county].n++; byC[t.county].v+=(t.value||0);});
   const cRows=Object.entries(byC).sort((a,b)=>b[1].v-a[1].v);
